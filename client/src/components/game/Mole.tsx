@@ -69,22 +69,20 @@ const Mole: React.FC<MoleProps> = ({ mole }) => {
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             onClick={handleClick}
           >
-            <div className="relative w-full h-full">
-              {/* Mole body */}
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="50" cy="50" r="40" className="fill-amber-700" />
-                <circle cx="50" cy="40" r="35" className="fill-amber-600" />
-                <circle cx="35" cy="35" r="5" className="fill-black" />
-                <circle cx="65" cy="35" r="5" className="fill-black" />
-                <path d="M 40 60 Q 50 70 60 60" className="stroke-black stroke-2 fill-none" />
-              </svg>
+            <div className="relative w-full h-full flex items-center justify-center">
+              {/* Mole image */}
+              <img 
+                src="/images/mole.png" 
+                alt="Mole" 
+                className="w-full h-full object-contain"
+              />
               
               {/* Number display */}
               <div 
                 className={cn(
-                  "absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-                  "bg-white rounded-full w-12 h-12 flex items-center justify-center",
-                  "border-4 border-primary font-bold text-2xl"
+                  "absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+                  "bg-white rounded-full min-w-[3rem] min-h-[3rem] flex items-center justify-center",
+                  "border-4 border-primary font-bold text-2xl p-1"
                 )}
               >
                 {value}

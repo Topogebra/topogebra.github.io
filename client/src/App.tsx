@@ -35,6 +35,16 @@ function App() {
     setSuccessSound(successSoundElement);
 
     setIsAudioInitialized(true);
+    
+    // Set viewport height to ensure proper scaling for 1366x768
+    document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+    
+    const handleResize = () => {
+      document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [setBackgroundMusic, setHitSound, setSuccessSound]);
 
   // Initialize background music when audio is ready
@@ -47,24 +57,27 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="w-full h-full flex flex-col items-center justify-center bg-background text-foreground overflow-auto">
-        <div className="w-full max-w-4xl p-4 flex flex-col items-center">
-          <header className="w-full text-center mb-4">
-            <h1 className="text-4xl font-bold text-primary mb-2">Math Mole Madness</h1>
+      <div 
+        className="w-screen h-screen flex flex-col items-center justify-center bg-background text-foreground overflow-auto"
+        style={{ maxWidth: '1366px', maxHeight: '768px', margin: '0 auto' }}
+      >
+        <div className="w-full h-full max-w-6xl p-4 flex flex-col items-center">
+          <header className="w-full text-center mb-2">
+            <h1 className="text-4xl font-bold text-primary mb-1">Math Mole Madness</h1>
             <p className="text-lg text-muted-foreground">
               Whack moles based on mathematical rules!
             </p>
           </header>
 
           {phase === "ready" && (
-            <div className="w-full flex flex-col items-center gap-8">
+            <div className="w-full flex flex-col items-center gap-6">
               <GameModes />
               <GameControls />
             </div>
           )}
 
           {phase === "playing" && (
-            <div className="w-full flex flex-col items-center">
+            <div className="w-full flex-1 flex flex-col items-center">
               <GameBoard />
             </div>
           )}
