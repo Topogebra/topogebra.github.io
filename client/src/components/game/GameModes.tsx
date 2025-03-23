@@ -5,13 +5,22 @@ import { useMathGame } from "@/lib/stores/useMathGame";
 import { cn } from "@/lib/utils";
 
 const GameModes: React.FC = () => {
-  const { gameMode, setGameMode, gameModes, gameTime, setGameTime } = useMathGame();
+  const { gameMode, setGameMode, gameModes, gameTime, setGameTime, toggleInstructions } = useMathGame();
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-bold mb-4 text-center">Select Game Mode</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-center flex-1">Selecciona un Modo de Juego</h2>
+        <Button
+          variant="outline"
+          onClick={toggleInstructions}
+          className="text-sm"
+        >
+          Instrucciones
+        </Button>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-6">
         {gameModes.map((mode) => (
           <Card 
             key={mode.id}
@@ -23,16 +32,16 @@ const GameModes: React.FC = () => {
             )}
             onClick={() => setGameMode(mode)}
           >
-            <CardContent className="p-4">
-              <h3 className="text-xl font-bold mb-2">{mode.label}</h3>
-              <p className="text-muted-foreground">{mode.description}</p>
+            <CardContent className="p-3">
+              <h3 className="text-xl font-bold mb-1">{mode.label}</h3>
+              <p className="text-muted-foreground text-sm">{mode.description}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="w-full">
-        <h3 className="text-xl font-bold mb-3 text-center">Game Duration</h3>
+        <h3 className="text-xl font-bold mb-3 text-center">Duración del Juego</h3>
         <div className="flex justify-center gap-4">
           {[30, 60, 90, 120].map((seconds) => (
             <Button

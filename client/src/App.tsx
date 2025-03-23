@@ -11,11 +11,12 @@ import GameBoard from "./components/game/GameBoard";
 import GameControls from "./components/game/GameControls";
 import GameModes from "./components/game/GameModes";
 import Instructions from "./components/game/Instructions";
+import HomePage from "./components/game/HomePage";
 import { useMathGame } from "./lib/stores/useMathGame";
 
 function App() {
   const { phase } = useGame();
-  const { gameMode, isInstructionsOpen } = useMathGame();
+  const { gameMode, isInstructionsOpen, showHome } = useMathGame();
   
   // Initialize audio elements
   const [isAudioInitialized, setIsAudioInitialized] = useState(false);
@@ -62,36 +63,44 @@ function App() {
         style={{ maxWidth: '1366px', maxHeight: '768px', margin: '0 auto' }}
       >
         <div className="w-full h-full max-w-6xl p-4 flex flex-col items-center">
-          <header className="w-full text-center mb-2">
-            <h1 className="text-4xl font-bold text-primary mb-1">Math Mole Madness</h1>
-            <p className="text-lg text-muted-foreground">
-              Whack moles based on mathematical rules!
-            </p>
-          </header>
-
-          {phase === "ready" && (
-            <div className="w-full flex flex-col items-center gap-6">
-              <GameModes />
-              <GameControls />
-            </div>
+          {!showHome && (
+            <header className="w-full text-center mb-2">
+              <h1 className="text-4xl font-bold text-primary mb-1">Locura de Topos Matemáticos</h1>
+              <p className="text-lg text-muted-foreground">
+                ¡Golpea topos basados en reglas matemáticas!
+              </p>
+            </header>
           )}
 
-          {phase === "playing" && (
-            <div className="w-full flex-1 flex flex-col items-center">
-              <GameBoard />
-            </div>
-          )}
+          {showHome ? (
+            <HomePage />
+          ) : (
+            <>
+              {phase === "ready" && (
+                <div className="w-full flex flex-col items-center gap-6">
+                  <GameModes />
+                  <GameControls />
+                </div>
+              )}
 
-          {phase === "ended" && (
-            <div className="w-full flex flex-col items-center gap-6 p-6 bg-card rounded-lg shadow-lg">
-              <h2 className="text-3xl font-bold">Game Over!</h2>
-              <div className="text-xl">
-                <p>Final Score: <span className="font-bold text-primary">{useMathGame.getState().score}</span></p>
-                <p className="mt-2">Correct Hits: <span className="font-bold text-green-500">{useMathGame.getState().correctHits}</span></p>
-                <p>Incorrect Hits: <span className="font-bold text-red-500">{useMathGame.getState().incorrectHits}</span></p>
-              </div>
-              <GameControls />
-            </div>
+              {phase === "playing" && (
+                <div className="w-full flex-1 flex flex-col items-center">
+                  <GameBoard />
+                </div>
+              )}
+
+              {phase === "ended" && (
+                <div className="w-full flex flex-col items-center gap-6 p-6 bg-card rounded-lg shadow-lg">
+                  <h2 className="text-3xl font-bold">¡Juego Terminado!</h2>
+                  <div className="text-xl">
+                    <p>Puntuación Final: <span className="font-bold text-primary">{useMathGame.getState().score}</span></p>
+                    <p className="mt-2">Aciertos: <span className="font-bold text-green-500">{useMathGame.getState().correctHits}</span></p>
+                    <p>Fallos: <span className="font-bold text-red-500">{useMathGame.getState().incorrectHits}</span></p>
+                  </div>
+                  <GameControls />
+                </div>
+              )}
+            </>
           )}
         </div>
 

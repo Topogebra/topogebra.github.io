@@ -16,6 +16,7 @@ interface MoleProps {
 const Mole: React.FC<MoleProps> = ({ mole }) => {
   const { id, value, active, hit } = mole;
   const [isHit, setIsHit] = useState(false);
+  const [isDead, setIsDead] = useState(false);
   const hitTimeoutRef = useRef<number | null>(null);
   
   const { checkMoleValue, hitMole } = useMathGame();
@@ -29,6 +30,7 @@ const Mole: React.FC<MoleProps> = ({ mole }) => {
     const isCorrect = checkMoleValue(value);
     if (isCorrect) {
       playSuccess();
+      setIsDead(true);
     } else {
       playHit();
     }
@@ -46,13 +48,28 @@ const Mole: React.FC<MoleProps> = ({ mole }) => {
     }, 300);
   }, [active, hit, id, value, hitMole, checkMoleValue, playHit, playSuccess]);
 
+  // Determine which mole image to use
+  const getMoleImage = () => {
+    if (isDead) return "/images/TopoMuerto.png";
+    if (isHit) return "/images/Topo3.png";
+    
+    // Show mole with number on sign
+    if (value < 10) {
+      return "/images/Topotarjeta.png";
+    } else {
+      return "/images/Topo2.png";
+    }
+  };
+
   return (
     <div className="relative w-full aspect-square flex items-center justify-center">
       {/* Mole hole */}
-      <div className="absolute inset-0 bg-brown-900 rounded-full overflow-hidden transform scale-[0.8] shadow-inner">
-        <svg viewBox="0 0 100 100" className="w-full h-full">
-          <ellipse cx="50" cy="90" rx="40" ry="20" className="fill-black/50" />
-        </svg>
+      <div className="absolute inset-0 rounded-full overflow-hidden transform scale-[0.8] shadow-inner">
+        <img 
+          src="/images/Hoyo.png" 
+          alt="Agujero" 
+          className="w-full h-full object-contain"
+        />
       </div>
       
       {/* Mole */}
@@ -72,21 +89,23 @@ const Mole: React.FC<MoleProps> = ({ mole }) => {
             <div className="relative w-full h-full flex items-center justify-center">
               {/* Mole image */}
               <img 
-                src="/images/mole.png" 
-                alt="Mole" 
+                src={getMoleImage()} 
+                alt="Topo" 
                 className="w-full h-full object-contain"
               />
               
-              {/* Number display */}
-              <div 
-                className={cn(
-                  "absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-                  "bg-white rounded-full min-w-[3rem] min-h-[3rem] flex items-center justify-center",
-                  "border-4 border-primary font-bold text-2xl p-1"
-                )}
-              >
-                {value}
-              </div>
+              {/* Number display - only added if using the mole without number card */}
+              {value >= 10 && (
+                <div 
+                  className={cn(
+                    "absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+                    "bg-[#CDDC39] rounded-sm min-w-[2.5rem] min-h-[2.5rem] flex items-center justify-center",
+                    "text-black font-bold text-2xl"
+                  )}
+                >
+                  {value}
+                </div>
+              )}
             </div>
           </motion.div>
         )}

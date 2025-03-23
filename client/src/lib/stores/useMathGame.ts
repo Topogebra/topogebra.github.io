@@ -30,6 +30,7 @@ interface MathGameState {
   lastPointsEarned: number;
   gameTime: number;
   isInstructionsOpen: boolean;
+  showHome: boolean;
   
   // Game mode
   gameMode: GameMode;
@@ -46,6 +47,7 @@ interface MathGameState {
   hitMole: (id: number, correct: boolean) => void;
   resetGameState: () => void;
   toggleInstructions: () => void;
+  setShowHome: (show: boolean) => void;
 }
 
 export const useMathGame = create<MathGameState>((set, get) => {
@@ -53,54 +55,45 @@ export const useMathGame = create<MathGameState>((set, get) => {
   const availableGameModes: GameMode[] = [
     {
       id: "even",
-      label: "Even Numbers",
-      description: "Whack only moles with even numbers",
+      label: "Números Pares",
+      description: "Golpea solo topos con números pares",
       valueRange: { min: 1, max: 20 },
       checkFunction: isEven,
       inverse: false
     },
     {
       id: "odd",
-      label: "Odd Numbers",
-      description: "Whack only moles with odd numbers",
+      label: "Números Impares",
+      description: "Golpea solo topos con números impares",
       valueRange: { min: 1, max: 20 },
       checkFunction: isOdd,
       inverse: false
     },
     {
       id: "prime",
-      label: "Prime Numbers",
-      description: "Whack only moles with prime numbers",
-      instructionDetail: "Prime numbers are numbers greater than 1 that are only divisible by 1 and themselves (e.g., 2, 3, 5, 7, 11, 13, 17, 19)",
+      label: "Números Primos",
+      description: "Golpea solo topos con números primos",
+      instructionDetail: "Los números primos son números mayores que 1 que solo son divisibles por 1 y por sí mismos (ej. 2, 3, 5, 7, 11, 13, 17, 19)",
       valueRange: { min: 1, max: 30 },
       checkFunction: isPrime,
       inverse: false
     },
     {
-      id: "divisible-by-3",
-      label: "Divisible by 3",
-      description: "Whack only moles with numbers divisible by 3",
-      valueRange: { min: 1, max: 30 },
-      checkFunction: (n) => isDivisibleBy(n, 3),
-      inverse: false
-    },
-    {
-      id: "not-multiples-of-5",
-      label: "NOT Multiples of 5",
-      description: "Whack moles with numbers that are NOT multiples of 5",
-      valueRange: { min: 1, max: 30 },
-      checkFunction: (n) => isMultipleOf(n, 5),
-      inverse: true
-    },
-    {
-      id: "fibonacci",
-      label: "Fibonacci Numbers",
-      description: "Whack moles with Fibonacci numbers",
-      instructionDetail: "Fibonacci numbers form a sequence where each number is the sum of the two preceding ones (e.g., 1, 1, 2, 3, 5, 8, 13, 21)",
+      id: "multiples-of-5",
+      label: "Múltiplos de 5",
+      description: "Golpea solo topos con números múltiplos de 5",
       valueRange: { min: 1, max: 50 },
-      checkFunction: isFibonacci,
+      checkFunction: (n) => isMultipleOf(n, 5),
       inverse: false
     },
+    {
+      id: "multiples-of-7",
+      label: "Múltiplos de 7",
+      description: "Golpea solo topos con números múltiplos de 7",
+      valueRange: { min: 1, max: 50 },
+      checkFunction: (n) => isMultipleOf(n, 7),
+      inverse: false
+    }
   ];
 
   return {
@@ -111,6 +104,7 @@ export const useMathGame = create<MathGameState>((set, get) => {
     lastPointsEarned: 0,
     gameTime: 60, // 60 seconds default game time
     isInstructionsOpen: false,
+    showHome: true,
     
     // Default game mode
     gameMode: availableGameModes[0],
@@ -168,6 +162,9 @@ export const useMathGame = create<MathGameState>((set, get) => {
     // Toggle instructions modal
     toggleInstructions: () => set(state => ({
       isInstructionsOpen: !state.isInstructionsOpen
-    }))
+    })),
+    
+    // Set show home state
+    setShowHome: (show) => set({ showHome: show })
   };
 });
