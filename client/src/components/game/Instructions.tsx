@@ -10,15 +10,15 @@ const Instructions: React.FC = () => {
     <Dialog open={isInstructionsOpen} onOpenChange={toggleInstructions}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-2xl">How to Play</DialogTitle>
+          <DialogTitle className="text-2xl">Cómo Jugar</DialogTitle>
           <DialogDescription>
-            Math Mole Madness is a fun way to practice your math skills!
+            ¡Topo Matemático es una forma divertida de practicar tus habilidades matemáticas!
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div>
-            <h3 className="text-lg font-bold">Game Modes</h3>
+            <h3 className="text-lg font-bold">Modos de Juego</h3>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               {gameModes.map(mode => (
                 <li key={mode.id}>
@@ -29,22 +29,22 @@ const Instructions: React.FC = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-bold">How to Score</h3>
+            <h3 className="text-lg font-bold">Cómo Puntuar</h3>
             <ul className="list-disc pl-5 space-y-1 mt-1">
-              <li>+10 points for each correct hit</li>
-              <li>-5 points for each incorrect hit</li>
-              <li>Moles disappear on their own if not hit</li>
+              <li>+10 puntos por cada golpe correcto</li>
+              <li>-5 puntos por cada golpe incorrecto</li>
+              <li>Los topos desaparecen por sí solos si no son golpeados</li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-bold">Current Mode</h3>
+            <h3 className="text-lg font-bold">Modo Actual</h3>
             <p>{gameMode.instructionDetail || gameMode.description}</p>
           </div>
         </div>
 
         <DialogFooter>
-          <Button onClick={toggleInstructions}>Got it!</Button>
+          <Button onClick={toggleInstructions}>¡Entendido!</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

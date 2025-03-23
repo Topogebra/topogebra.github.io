@@ -19,11 +19,11 @@ const HomePage: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center"
       >
-        <h1 className="text-4xl font-bold text-primary mb-4">Locura de Topos Matemáticos</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 text-center">Topo Matemático</h1>
         
         <div className="w-64 h-64 relative mb-8">
           <img
-            src="/images/TopoBienvenida.png"
+            src="/client/public/assets/TopoBienvenida.png"
             alt="Topo de bienvenida"
             className="w-full h-full object-contain"
           />
