@@ -22,6 +22,9 @@ export interface GameMode {
   inverse: boolean;
 }
 
+// Definir los estados del juego
+export type GamePhase = "home" | "instructions" | "mode-selection" | "playing" | "game-over";
+
 interface MathGameState {
   // Game state
   score: number;
@@ -31,6 +34,9 @@ interface MathGameState {
   gameTime: number;
   isInstructionsOpen: boolean;
   showHome: boolean;
+  
+  // Nueva propiedad para el flujo del juego
+  gamePhase: GamePhase;
   
   // Game mode
   gameMode: GameMode;
@@ -48,6 +54,8 @@ interface MathGameState {
   resetGameState: () => void;
   toggleInstructions: () => void;
   setShowHome: (show: boolean) => void;
+  setGamePhase: (phase: GamePhase) => void;
+  goToNextPhase: () => void;
 }
 
 export const useMathGame = create<MathGameState>((set, get) => {
@@ -105,6 +113,7 @@ export const useMathGame = create<MathGameState>((set, get) => {
     gameTime: 60, // 60 seconds default game time
     isInstructionsOpen: false,
     showHome: true,
+    gamePhase: "home",
     
     // Default game mode
     gameMode: availableGameModes[0],
@@ -165,6 +174,35 @@ export const useMathGame = create<MathGameState>((set, get) => {
     })),
     
     // Set show home state
-    setShowHome: (show) => set({ showHome: show })
+    setShowHome: (show) => set({ showHome: show }),
+    
+    // Set game phase directly
+    setGamePhase: (phase) => set({ gamePhase: phase }),
+    
+    // Avanzar a la siguiente fase del juego
+    goToNextPhase: () => {
+      const { gamePhase } = get();
+      
+      switch (gamePhase) {
+        case "home":
+          set({ gamePhase: "instructions" });
+          break;
+        case "instructions":
+          set({ gamePhase: "mode-selection" });
+          break;
+        case "mode-selection":
+          set({ gamePhase: "playing" });
+          break;
+        case "playing":
+          set({ gamePhase: "game-over" });
+          break;
+        case "game-over":
+          set({ 
+            gamePhase: "home",
+            showHome: true
+          });
+          break;
+      }
+    }
   };
 });

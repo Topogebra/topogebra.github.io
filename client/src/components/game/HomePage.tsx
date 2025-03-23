@@ -5,10 +5,11 @@ import { motion } from "framer-motion";
 
 const HomePage: React.FC = () => {
   const { start } = useGame();
-  const { setShowHome } = useMathGame();
+  const { goToNextPhase } = useMathGame();
   
   const handlePlayClick = () => {
-    setShowHome(false);
+    // Ahora utilizamos el nuevo flujo de fases
+    goToNextPhase();
   };
   
   return (
