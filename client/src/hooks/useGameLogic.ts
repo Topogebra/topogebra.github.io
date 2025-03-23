@@ -3,8 +3,7 @@ import { useMathGame } from "@/lib/stores/useMathGame";
 import { useGame } from "@/lib/stores/useGame";
 
 export function useGameLogic() {
-  const { phase } = useGame();
-  const { gameTime } = useMathGame();
+  const { gamePhase, gameTime } = useMathGame();
   const [timeLeft, setTimeLeft] = useState(gameTime);
 
   // Start timer for the game
@@ -14,7 +13,7 @@ export function useGameLogic() {
 
   // Update timer every second
   useEffect(() => {
-    if (phase !== "playing") return;
+    if (gamePhase !== "playing") return;
 
     const timerInterval = setInterval(() => {
       setTimeLeft((prevTime) => {
@@ -27,7 +26,14 @@ export function useGameLogic() {
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, [phase]);
+  }, [gamePhase]);
+
+  // Cuando cambia la duración del juego, reiniciamos el timer
+  useEffect(() => {
+    if (gamePhase === "playing") {
+      setTimeLeft(gameTime);
+    }
+  }, [gameTime, gamePhase]);
 
   return {
     timeLeft,

@@ -6,10 +6,11 @@ import Score from "./Score";
 import Timer from "./Timer";
 import { useGameLogic } from "@/hooks/useGameLogic";
 import { useMoles } from "@/hooks/useMoles";
+import { motion } from "framer-motion";
 
 const GameBoard: React.FC = () => {
   const { end } = useGame();
-  const { gameMode, gameTime, resetGameState } = useMathGame();
+  const { gameMode, gameTime, resetGameState, goToNextPhase } = useMathGame();
   const { moles, resetMoles } = useMoles();
   const { timeLeft, startTimer } = useGameLogic();
 
@@ -17,23 +18,31 @@ const GameBoard: React.FC = () => {
   useEffect(() => {
     startTimer();
     
-    // End game when timer reaches 0
-    if (timeLeft <= 0) {
-      end();
-    }
-    
+    // Clean up when component unmounts
     return () => {
-      // Clean up when component unmounts
       resetGameState();
       resetMoles();
     };
-  }, [timeLeft, end, resetGameState, resetMoles, startTimer]);
+  }, [resetGameState, resetMoles, startTimer]);
+
+  // Manejo del fin del tiempo
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      // Usamos el nuevo sistema de fases
+      goToNextPhase(); // De "playing" a "game-over"
+    }
+  }, [timeLeft, goToNextPhase]);
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col items-center game-container">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="w-full max-w-5xl mx-auto flex flex-col items-center game-container"
+    >
       <div className="w-full flex justify-between items-center mb-2 px-4">
         <Score />
-        <div className="px-3 py-1 bg-accent rounded-md shadow-sm">
+        <div className="px-3 py-1 bg-[#A3BDC7] rounded-md shadow-sm text-[#333]">
           <span className="font-medium">Modo: </span>
           <span className="font-bold">{gameMode.label}</span>
         </div>
@@ -41,7 +50,7 @@ const GameBoard: React.FC = () => {
       </div>
 
       <div 
-        className="w-full bg-primary/10 rounded-lg p-4 grid grid-cols-5 grid-rows-2 gap-3"
+        className="w-full bg-[#e2f0ea] rounded-lg p-4 grid grid-cols-5 grid-rows-2 gap-3"
         style={{ 
           maxHeight: 'calc(100vh - 150px)',
           minHeight: '450px'
@@ -54,7 +63,7 @@ const GameBoard: React.FC = () => {
           />
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

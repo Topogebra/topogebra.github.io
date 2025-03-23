@@ -115,7 +115,7 @@ const Mole: React.FC<MoleProps> = ({ mole }) => {
                   "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2",
                   "flex items-center justify-center",
                   "text-black font-bold font-mono",
-                  "bg-white/60 rounded-full px-2 py-0.5 shadow-sm",
+                  "bg-white rounded-full px-3 py-1 shadow-md border-2 border-[#007bff]",
                   getNumberStyles()
                 )}
               >

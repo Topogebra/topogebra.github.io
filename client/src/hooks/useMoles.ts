@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useMathGame } from "@/lib/stores/useMathGame";
 import { useGame } from "@/lib/stores/useGame";
 
-interface Mole {
+export interface Mole {
   id: number;
   value: number;
   active: boolean;
@@ -13,14 +13,15 @@ interface Mole {
 const MOLE_COUNT = 10;
 
 // Time ranges for mole appearances (in milliseconds)
-const MIN_ACTIVE_TIME = 2000;
-const MAX_ACTIVE_TIME = 3500;
+const MIN_ACTIVE_TIME = 2000; // Cuánto tiempo permanece el topo activo como mínimo
+const MAX_ACTIVE_TIME = 3500; // Cuánto tiempo permanece el topo activo como máximo
+
+// Tiempos entre apariciones (5-7 segundos según requisito)
 const MIN_INACTIVE_TIME = 5000; // 5 segundos
 const MAX_INACTIVE_TIME = 7000; // 7 segundos
 
 export function useMoles() {
-  const { phase } = useGame();
-  const { valueRange } = useMathGame();
+  const { gamePhase, valueRange } = useMathGame();
   const [moles, setMoles] = useState<Mole[]>([]);
 
   // Initialize moles
@@ -37,7 +38,7 @@ export function useMoles() {
 
   // Handle mole activation
   useEffect(() => {
-    if (phase !== "playing") return;
+    if (gamePhase !== "playing") return;
 
     const timers: number[] = [];
 
@@ -83,6 +84,11 @@ export function useMoles() {
       timers.push(timerId);
     };
     
+    // Activar algunos topos inicialmente para que el juego no empiece vacío
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => activateMoles(), i * 500);
+    }
+    
     // Start scheduling mole activations
     scheduleMoleActivation();
     
@@ -90,7 +96,7 @@ export function useMoles() {
     return () => {
       timers.forEach(timerId => window.clearTimeout(timerId));
     };
-  }, [moles, phase, valueRange]);
+  }, [moles, gamePhase, valueRange]);
 
   // Function to update a mole when it's hit
   const hitMole = useCallback((id: number) => {
