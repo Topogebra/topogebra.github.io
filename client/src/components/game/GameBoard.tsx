@@ -34,17 +34,17 @@ const GameBoard: React.FC = () => {
       <div className="w-full flex justify-between items-center mb-2 px-2">
         <Score />
         <div className="px-3 py-1 bg-accent rounded-md">
-          <span className="font-medium">Mode: </span>
+          <span className="font-medium">Modo: </span>
           <span className="font-bold">{gameMode.label}</span>
         </div>
         <Timer timeLeft={timeLeft} totalTime={gameTime} />
       </div>
 
       <div 
-        className="w-full h-full bg-primary/10 rounded-lg p-4 grid grid-cols-4 grid-rows-3 gap-3"
+        className="w-full h-full bg-primary/10 rounded-lg p-4 grid grid-cols-5 grid-rows-2 gap-3"
         style={{ maxHeight: 'calc(768px - 120px)' }}
       >
-        {moles.map((mole) => (
+        {moles.slice(0, 10).map((mole) => (
           <Mole 
             key={mole.id} 
             mole={mole}

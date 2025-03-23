@@ -50,14 +50,14 @@ const Mole: React.FC<MoleProps> = ({ mole }) => {
 
   // Determine which mole image to use
   const getMoleImage = () => {
-    if (isDead) return "/images/TopoMuerto.png";
-    if (isHit) return "/images/Topo3.png";
+    if (isDead) return "/assets/TopoMuerto.png";
+    if (isHit) return "/assets/Topo3.png";
     
     // Show mole with number on sign
     if (value < 10) {
-      return "/images/Topotarjeta.png";
+      return "/assets/Topotarjeta.png";
     } else {
-      return "/images/Topo2.png";
+      return "/assets/Topo2.png";
     }
   };
 
@@ -66,7 +66,7 @@ const Mole: React.FC<MoleProps> = ({ mole }) => {
       {/* Mole hole */}
       <div className="absolute inset-0 rounded-full overflow-hidden transform scale-[0.8] shadow-inner">
         <img 
-          src="/images/Hoyo.png" 
+          src="/assets/Hoyo.png" 
           alt="Agujero" 
           className="w-full h-full object-contain"
         />
@@ -94,18 +94,16 @@ const Mole: React.FC<MoleProps> = ({ mole }) => {
                 className="w-full h-full object-contain"
               />
               
-              {/* Number display - only added if using the mole without number card */}
-              {value >= 10 && (
-                <div 
-                  className={cn(
-                    "absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-                    "bg-[#CDDC39] rounded-sm min-w-[2.5rem] min-h-[2.5rem] flex items-center justify-center",
-                    "text-black font-bold text-2xl"
-                  )}
-                >
-                  {value}
-                </div>
-              )}
+              {/* Number display */}
+              <div 
+                className={cn(
+                  "absolute top-[28%] left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+                  "flex items-center justify-center",
+                  "text-black font-bold text-2xl"
+                )}
+              >
+                {value}
+              </div>
             </div>
           </motion.div>
         )}

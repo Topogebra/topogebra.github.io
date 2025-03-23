@@ -19,7 +19,7 @@ const Timer: React.FC<TimerProps> = ({ timeLeft, totalTime }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <h2 className="text-xl font-bold mb-1">Time</h2>
+      <h2 className="text-xl font-bold mb-1">Tiempo</h2>
       <div className="text-2xl font-mono">{formatTime(timeLeft)}</div>
       <Progress 
         value={percentageLeft} 

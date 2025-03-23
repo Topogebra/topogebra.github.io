@@ -23,7 +23,7 @@ const HomePage: React.FC = () => {
         
         <div className="w-64 h-64 relative mb-8">
           <img
-            src="/client/public/assets/TopoBienvenida.png"
+            src="/assets/TopoBienvenida.png"
             alt="Topo de bienvenida"
             className="w-full h-full object-contain"
           />

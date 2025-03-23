@@ -7,7 +7,7 @@ const Score: React.FC = () => {
 
   return (
     <div className="relative flex flex-col items-center">
-      <h2 className="text-xl font-bold">Score</h2>
+      <h2 className="text-xl font-bold">Puntuación</h2>
       <div className="text-3xl font-bold text-primary">{score}</div>
       
       {/* Animated score change indicator */}
