@@ -10,13 +10,13 @@ interface Mole {
 }
 
 // Number of moles to show on the game board
-const MOLE_COUNT = 12;
+const MOLE_COUNT = 10;
 
 // Time ranges for mole appearances (in milliseconds)
-const MIN_ACTIVE_TIME = 1000;
+const MIN_ACTIVE_TIME = 1200;
 const MAX_ACTIVE_TIME = 3000;
 const MIN_INACTIVE_TIME = 500;
-const MAX_INACTIVE_TIME = 2000;
+const MAX_INACTIVE_TIME = 1800;
 
 export function useMoles() {
   const { phase } = useGame();

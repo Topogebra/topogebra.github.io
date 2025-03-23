@@ -30,10 +30,10 @@ const GameBoard: React.FC = () => {
   }, [timeLeft, end, resetGameState, resetMoles, startTimer]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center game-container">
-      <div className="w-full flex justify-between items-center mb-2 px-2">
+    <div className="w-full max-w-5xl mx-auto flex flex-col items-center game-container">
+      <div className="w-full flex justify-between items-center mb-2 px-4">
         <Score />
-        <div className="px-3 py-1 bg-accent rounded-md">
+        <div className="px-3 py-1 bg-accent rounded-md shadow-sm">
           <span className="font-medium">Modo: </span>
           <span className="font-bold">{gameMode.label}</span>
         </div>
@@ -41,10 +41,13 @@ const GameBoard: React.FC = () => {
       </div>
 
       <div 
-        className="w-full h-full bg-primary/10 rounded-lg p-4 grid grid-cols-5 grid-rows-2 gap-3"
-        style={{ maxHeight: 'calc(768px - 120px)' }}
+        className="w-full bg-primary/10 rounded-lg p-4 grid grid-cols-5 grid-rows-2 gap-3"
+        style={{ 
+          maxHeight: 'calc(100vh - 150px)',
+          minHeight: '450px'
+        }}
       >
-        {moles.slice(0, 10).map((mole) => (
+        {moles.map((mole) => (
           <Mole 
             key={mole.id} 
             mole={mole}
