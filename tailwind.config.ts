@@ -5,6 +5,11 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+       // Agrega la fuente Minya aquí
+       fontFamily: {
+        Cleanow: ['Cleanow', 'sans-serif'],
+        ShineTypewriter: ['ShineTypewriter', 'sans-serif'],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

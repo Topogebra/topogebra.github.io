@@ -43,7 +43,7 @@ const GameModes: React.FC = () => {
       <div className="w-full">
         <h3 className="text-xl font-bold mb-3 text-center">Duración del Juego</h3>
         <div className="flex justify-center flex-wrap gap-2 sm:gap-4">
-          {[30, 60, 90, 120].map((seconds) => (
+          {[20, 30, 40].map((seconds) => (
             <Button
               key={seconds}
               variant={gameTime === seconds ? "default" : "outline"}

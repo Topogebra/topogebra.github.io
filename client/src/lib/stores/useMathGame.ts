@@ -1,14 +1,11 @@
 import { create } from "zustand";
-import { 
-  isEven, 
-  isOdd, 
-  isPrime, 
-  isDivisibleBy, 
+import {
+  isEven,
+  isOdd,
+  isPrime,
   isMultipleOf,
-  isFibonacci
 } from "../math";
 
-// Game mode type definitions
 export interface GameMode {
   id: string;
   label: string;
@@ -22,11 +19,9 @@ export interface GameMode {
   inverse: boolean;
 }
 
-// Definir los estados del juego
 export type GamePhase = "home" | "instructions" | "mode-selection" | "playing" | "game-over";
 
 interface MathGameState {
-  // Game state
   score: number;
   correctHits: number;
   incorrectHits: number;
@@ -34,175 +29,166 @@ interface MathGameState {
   gameTime: number;
   isInstructionsOpen: boolean;
   showHome: boolean;
-  
-  // Nueva propiedad para el flujo del juego
   gamePhase: GamePhase;
-  
-  // Game mode
   gameMode: GameMode;
   gameModes: GameMode[];
   valueRange: {
     min: number;
     max: number;
   };
-  
-  // Actions
   setGameMode: (mode: GameMode) => void;
   setGameTime: (seconds: number) => void;
   checkMoleValue: (value: number) => boolean;
-  hitMole: (id: number, correct: boolean) => void;
+  hitMole: (id: number, isBad: boolean, value: number) => void;
   resetGameState: () => void;
   toggleInstructions: () => void;
   setShowHome: (show: boolean) => void;
   setGamePhase: (phase: GamePhase) => void;
   goToNextPhase: () => void;
+  goToPreviousPhase: () => void;
+  goToModeSelection: () => void;
 }
 
 export const useMathGame = create<MathGameState>((set, get) => {
-  // Define all available game modes
   const availableGameModes: GameMode[] = [
     {
-      id: "even",
+      id: "pares",
       label: "Números Pares",
       description: "Golpea solo topos con números pares",
-      valueRange: { min: 1, max: 20 },
+      valueRange: { min: 1, max: 40 },
       checkFunction: isEven,
-      inverse: false
+      inverse: false,
     },
     {
-      id: "odd",
+      id: "impares",
       label: "Números Impares",
       description: "Golpea solo topos con números impares",
-      valueRange: { min: 1, max: 20 },
+      valueRange: { min: 1, max: 40 },
       checkFunction: isOdd,
-      inverse: false
+      inverse: false,
     },
     {
-      id: "prime",
+      id: "primos",
       label: "Números Primos",
       description: "Golpea solo topos con números primos",
-      instructionDetail: "Los números primos son números mayores que 1 que solo son divisibles por 1 y por sí mismos (ej. 2, 3, 5, 7, 11, 13, 17, 19)",
-      valueRange: { min: 1, max: 30 },
+      instructionDetail: "Los números primos son mayores que 1 y solo divisibles por 1 y por sí mismos (ej. 2, 3, 5, 7, 11...)",
+      valueRange: { min: 1, max: 90 },
       checkFunction: isPrime,
-      inverse: false
+      inverse: false,
     },
     {
-      id: "multiples-of-5",
+      id: "multiplos5",
       label: "Múltiplos de 5",
       description: "Golpea solo topos con números múltiplos de 5",
-      valueRange: { min: 1, max: 50 },
+      valueRange: { min: 1, max: 40 },
       checkFunction: (n) => isMultipleOf(n, 5),
-      inverse: false
+      inverse: false,
     },
     {
-      id: "multiples-of-7",
+      id: "multiplos7",
       label: "Múltiplos de 7",
       description: "Golpea solo topos con números múltiplos de 7",
-      valueRange: { min: 1, max: 50 },
+      valueRange: { min: 1, max: 40 },
       checkFunction: (n) => isMultipleOf(n, 7),
-      inverse: false
-    }
+      inverse: false,
+    },
   ];
 
   return {
-    // Initial state
     score: 0,
     correctHits: 0,
     incorrectHits: 0,
     lastPointsEarned: 0,
-    gameTime: 60, // 60 seconds default game time
+    gameTime: 60,
     isInstructionsOpen: false,
     showHome: true,
     gamePhase: "home",
-    
-    // Default game mode
     gameMode: availableGameModes[0],
     gameModes: availableGameModes,
     valueRange: availableGameModes[0].valueRange,
-    
-    // Set the game mode
-    setGameMode: (mode) => set({ 
-      gameMode: mode,
-      valueRange: mode.valueRange
-    }),
-    
-    // Set the game time in seconds
+
+    setGameMode: (mode) => {
+      if (!mode?.valueRange) return;
+      set({
+        gameMode: mode,
+        valueRange: mode.valueRange,
+      });
+    },
+
     setGameTime: (seconds) => set({ gameTime: seconds }),
-    
-    // Check if a mole's value matches the current mode's criteria
+
     checkMoleValue: (value) => {
       const { gameMode } = get();
       const result = gameMode.checkFunction(value);
-      
-      // If the mode is inverse, we want the opposite result
       return gameMode.inverse ? !result : result;
     },
-    
-    // Handle when a mole is hit
-    hitMole: (id, correct) => {
-      if (correct) {
-        set(state => ({
-          score: state.score + 10,
-          correctHits: state.correctHits + 1,
-          lastPointsEarned: 10
-        }));
+
+    hitMole: (id, isBad, value) => {
+      const { gameMode } = get();
+      let points = 0;
+      let correct = false;
+
+      if (isBad) {
+        points = -10;
+        correct = false;
       } else {
-        set(state => ({
-          score: Math.max(0, state.score - 5), // Don't go below 0
-          incorrectHits: state.incorrectHits + 1,
-          lastPointsEarned: -5
-        }));
+        correct = gameMode.checkFunction(value);
+        points = correct ? 10 : -5;
       }
-      
-      // Reset points counter after a delay
+
+      set((state) => ({
+        score: state.score + points,
+        correctHits: correct ? state.correctHits + 1 : state.correctHits,
+        incorrectHits: !correct ? state.incorrectHits + 1 : state.incorrectHits,
+        lastPointsEarned: points,
+      }));
+
       setTimeout(() => {
         set({ lastPointsEarned: 0 });
       }, 1000);
     },
-    
-    // Reset the game state
-    resetGameState: () => set({
-      score: 0,
-      correctHits: 0,
-      incorrectHits: 0,
-      lastPointsEarned: 0
-    }),
-    
-    // Toggle instructions modal
-    toggleInstructions: () => set(state => ({
-      isInstructionsOpen: !state.isInstructionsOpen
-    })),
-    
-    // Set show home state
+
+    resetGameState: () =>
+      set({
+        score: 0,
+        correctHits: 0,
+        incorrectHits: 0,
+        lastPointsEarned: 0,
+      }),
+
+    toggleInstructions: () =>
+      set((state) => ({ isInstructionsOpen: !state.isInstructionsOpen })),
+
     setShowHome: (show) => set({ showHome: show }),
-    
-    // Set game phase directly
+
     setGamePhase: (phase) => set({ gamePhase: phase }),
-    
-    // Avanzar a la siguiente fase del juego
+
+    goToModeSelection: () => {
+      set({ gamePhase: "mode-selection" });
+    },
+
     goToNextPhase: () => {
       const { gamePhase } = get();
-      
-      switch (gamePhase) {
-        case "home":
-          set({ gamePhase: "instructions" });
-          break;
-        case "instructions":
-          set({ gamePhase: "mode-selection" });
-          break;
-        case "mode-selection":
-          set({ gamePhase: "playing" });
-          break;
-        case "playing":
-          set({ gamePhase: "game-over" });
-          break;
-        case "game-over":
-          set({ 
-            gamePhase: "home",
-            showHome: true
-          });
-          break;
-      }
-    }
+      const nextPhases: Record<GamePhase, GamePhase> = {
+        home: "instructions",
+        instructions: "mode-selection",
+        "mode-selection": "playing",
+        playing: "game-over",
+        "game-over": "home",
+      };
+      set({ gamePhase: nextPhases[gamePhase] });
+    },
+
+    goToPreviousPhase: () => {
+      const { gamePhase } = get();
+      const previousPhases: Record<GamePhase, GamePhase> = {
+        home: "home",
+        instructions: "home",
+        "mode-selection": "instructions",
+        playing: "mode-selection",
+        "game-over": "playing",
+      };
+      set({ gamePhase: previousPhases[gamePhase] });
+    },
   };
 });

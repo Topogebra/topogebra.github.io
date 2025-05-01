@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMathGame } from "@/lib/stores/useMathGame";
-import { useAudio } from "@/lib/stores/useAudio";
 import { cn } from "@/lib/utils";
 
 interface MoleProps {
@@ -10,121 +9,117 @@ interface MoleProps {
     value: number;
     active: boolean;
     hit: boolean;
+    type: 'normal' | 'bad';
   };
 }
 
 const Mole: React.FC<MoleProps> = ({ mole }) => {
-  const { id, value, active, hit } = mole;
+  const { id, value, active, hit, type } = mole;
   const [isHit, setIsHit] = useState(false);
   const [isDead, setIsDead] = useState(false);
   const hitTimeoutRef = useRef<number | null>(null);
-  
-  const { checkMoleValue, hitMole } = useMathGame();
-  const { playHit, playSuccess } = useAudio();
+  const deadTimeoutRef = useRef<number | null>(null);
 
-  // Reset isDead state when mole becomes inactive
+  const { hitMole } = useMathGame();
+
   useEffect(() => {
     if (!active) {
       setIsDead(false);
+      setIsHit(false);
+      if (hitTimeoutRef.current) clearTimeout(hitTimeoutRef.current);
+      if (deadTimeoutRef.current) clearTimeout(deadTimeoutRef.current);
     }
   }, [active]);
 
   const handleClick = useCallback(() => {
     if (!active || hit) return;
-    
+  
     setIsHit(true);
-    
-    const isCorrect = checkMoleValue(value);
-    if (isCorrect) {
-      playSuccess();
-      setIsDead(true);
-    } else {
-      playHit();
-    }
-    
-    // Register hit with game state
-    hitMole(id, isCorrect);
-    
-    // Reset hit animation after a short delay
-    if (hitTimeoutRef.current) {
-      window.clearTimeout(hitTimeoutRef.current);
-    }
-    
+    hitMole(id, type === 'bad', value);
+
     hitTimeoutRef.current = window.setTimeout(() => {
       setIsHit(false);
+      setIsDead(true);
+      
+      deadTimeoutRef.current = window.setTimeout(() => {
+        setIsDead(false);
+      }, 700);
     }, 300);
-  }, [active, hit, id, value, hitMole, checkMoleValue, playHit, playSuccess]);
 
-  // Determine which mole image to use
+    return () => {
+      if (hitTimeoutRef.current) clearTimeout(hitTimeoutRef.current);
+      if (deadTimeoutRef.current) clearTimeout(deadTimeoutRef.current);
+    };
+  }, [active, hit, id, type, value, hitMole]);
+
   const getMoleImage = () => {
     if (isDead) return "/assets/TopoMuerto.png";
-    if (isHit) return "/assets/Topo3.png";
-    
-    // Para números con un solo dígito usamos una imagen, para números con 2 dígitos otra
-    return value < 10 ? "/assets/Topotarjeta.png" : "/assets/Topo1cartel.png";
-  };
+    if (isHit) return "/assets/Topochillón.png";
+    if (type === 'bad') return "/assets/TopoMalo.png";
 
-  // Determine number position and size based on value
-  const getNumberStyles = () => {
-    if (value < 10) {
-      return "top-[26%] text-3xl";
-    } else if (value < 100) {
-      return "top-[28%] text-2xl";
-    } else {
-      return "top-[30%] text-xl";
-    }
+    const moleVariants = [
+      "/assets/Topotarjeta.png",
+      "/assets/Topotarjeta2.png",
+      "/assets/Topotarjeta3.png",
+      "/assets/Topotarjeta4.png"
+    ];
+    return moleVariants[Math.floor(id % moleVariants.length)];
   };
 
   return (
-    <div className="relative w-full aspect-square flex items-center justify-center">
-      {/* Mole hole */}
-      <div className="absolute inset-0 rounded-full overflow-hidden transform scale-[0.85] shadow-md">
-        <img 
-          src="/assets/Hoyo.png" 
-          alt="Agujero" 
-          className="w-full h-full object-contain"
-        />
+    <div
+      className="relative w-full bottom-4 aspect-square flex items-center justify-center overflow-hidden"
+      style={{ 
+        pointerEvents: active ? 'auto' : 'none'
+      }}
+    >
+      {/* Hoyo de fondo */}
+      <div className="absolute w-full z-0 pointer-events-none top-3 px-2">
+      <img
+  src="/assets/Hoyo.png"
+  alt="Hoyo fondo"
+  className="w-full h-full object-contain scale-[1.5]"
+/>
+
       </div>
-      
-      {/* Mole */}
+
       <AnimatePresence>
         {active && !hit && (
           <motion.div
             className={cn(
-              "absolute bottom-0 w-[85%] h-[85%] cursor-pointer",
-              isHit && "cursor-default"
+              "absolute bottom-0 w-[85%] h-[85%] z-10"
             )}
             initial={{ y: "100%" }}
-            animate={{ y: "18%" }}
+            animate={{ y: isDead ? "100%" : "18%" }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             onClick={handleClick}
           >
-            <div className="relative w-full h-full flex items-center justify-center">
-              {/* Mole image */}
-              <img 
-                src={getMoleImage()} 
-                alt="Topo" 
+            <div className="relative w-full h-full flex items-center justify-center scale-[1.22] origin-bottom">
+              <img
+                src={getMoleImage()}
+                alt="Topo"
                 className="w-full h-full object-contain"
                 draggable={false}
               />
-              
-              {/* Number display */}
-              <div 
-                className={cn(
-                  "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-                  "flex items-center justify-center",
-                  "text-black font-bold font-mono",
-                  "bg-white rounded-full px-3 py-1 shadow-md border-2 border-[#007bff]",
-                  getNumberStyles()
-                )}
-              >
-                {value}
-              </div>
+              {type === 'normal' && !isHit && !isDead && (
+                <div className="absolute top-2 left-19 text-black font-Cleanow text-2xl">
+                  {value}
+                </div>
+              )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Tierra encima del topo */}
+      <div className="absolute w-full z-20 pointer-events-none transform translate-y-[6%]">
+        <img
+          src="/assets/Hoyos.png"
+          alt="Hoyos"
+          className="w-full h-full object-contain px-2 py-14 rounded-full"
+        />
+      </div>
     </div>
   );
 };

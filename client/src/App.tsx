@@ -9,22 +9,21 @@ import "./index.css";
 // Import game components
 import GameBoard from "./components/game/GameBoard";
 import GameControls from "./components/game/GameControls";
-import Instructions from "./components/game/Instructions";
 import HomePage from "./components/game/HomePage";
 import InstructionsPage from "./components/game/InstructionsPage";
 import ModeSelectionPage from "./components/game/ModeSelectionPage";
 import { useMathGame } from "./lib/stores/useMathGame";
+import { motion } from "framer-motion";
 
 function App() {
   const { phase } = useGame();
   const { isInstructionsOpen, gamePhase } = useMathGame();
-  
+
   // Initialize audio elements
   const [isAudioInitialized, setIsAudioInitialized] = useState(false);
   const { setBackgroundMusic, setHitSound, setSuccessSound, toggleMute } = useAudio();
 
   useEffect(() => {
-    // Create audio elements on mount
     const backgroundMusicElement = new Audio("/sounds/background.mp3");
     backgroundMusicElement.loop = true;
     backgroundMusicElement.volume = 0.4;
@@ -37,28 +36,25 @@ function App() {
     setSuccessSound(successSoundElement);
 
     setIsAudioInitialized(true);
-    
-    // Set viewport height to ensure proper scaling for 1366x768
-    document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
-    
+
+    document.documentElement.style.setProperty("--app-height", `${window.innerHeight}px`);
     const handleResize = () => {
-      document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+      document.documentElement.style.setProperty("--app-height", `${window.innerHeight}px`);
     };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [setBackgroundMusic, setHitSound, setSuccessSound]);
 
-  // Initialize background music when audio is ready
   useEffect(() => {
     if (isAudioInitialized && phase === "playing") {
-      // Unmute and play background music when game starts
       toggleMute();
     }
   }, [isAudioInitialized, phase, toggleMute]);
 
-  // Renderizar la página correspondiente según la fase del juego
   const renderGamePhase = () => {
+    const { correctHits, incorrectHits, score } = useMathGame();
+  
     switch (gamePhase) {
       case "home":
         return <HomePage />;
@@ -74,14 +70,64 @@ function App() {
         );
       case "game-over":
         return (
-          <div className="w-full flex flex-col items-center gap-6 p-6 bg-[#A3BDC7] rounded-lg shadow-lg">
-            <h2 className="text-3xl font-bold text-white">¡Juego Terminado!</h2>
-            <div className="text-xl bg-white p-6 rounded-lg shadow-md">
-              <p>Puntuación Final: <span className="font-bold text-primary">{useMathGame.getState().score}</span></p>
-              <p className="mt-2">Aciertos: <span className="font-bold text-green-500">{useMathGame.getState().correctHits}</span></p>
-              <p>Fallos: <span className="font-bold text-red-500">{useMathGame.getState().incorrectHits}</span></p>
+          <div className="w-full flex flex-col items-center -mt-2">
+            {/* Contenedor para imagen y recuadro (pegados) */}
+            <div className="flex flex-col items-center">
+              {/* Imagen de trofeo con rebote */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: [-10, -20, -10],
+                  transition: {
+                    y: {
+                      repeat: Infinity,
+                      repeatType: "mirror",
+                      duration: 1.8,
+                      ease: "easeInOut"
+                    },
+                    opacity: { duration: 0.6 },
+                    scale: { duration: 0.6 }
+                  }
+                }}
+                className="w-40 h-40 md:w-96 md:h-96"
+              >
+                <img 
+  src={score > 0 ? "/assets/win.png" : "/assets/nowin.png"} 
+  alt={score > 0 ? "¡Ganaste!" : "Sigue intentando"} 
+  className="w-full h-full object-contain drop-shadow-xl"
+/>
+
+              </motion.div>
+              
+              {/* Recuadro de resultados (pegado a la imagen) */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                className="bg-[#E8F4FB] border-2 border-[#A3BDC7] rounded-2xl p-2 w-[500px] shadow-md -mt-9"              >
+                <h2 className="text-2xl font-Cleanow text-center text-[#3c2f80]">
+                  ¡Resultado Final!
+                </h2>
+                <div className="text-center text-lg font-ShineTypewriter text-[#000000] space-y-1">
+                  <p>
+                    🎯 <span className="text-2xl font-bold text-[#257551]">Aciertos:</span> {correctHits}
+                  </p>
+                  <p>
+                    ❌ <span className="text-2xl font-bold text-[#911818]">Errores:</span> {incorrectHits}
+                  </p>
+                  <p className="text-2xl font-bold text-[#3c2f80] mt-4">
+                    🏆 Puntuación: <span className="text-[#000] text-2xl">{score} pts</span>
+                  </p>
+                </div>
+              </motion.div>
             </div>
-            <GameControls />
+
+            {/* Espacio antes de los botones */}
+            <div className="mt-4 w-full">
+              <GameControls />
+            </div>
           </div>
         );
       default:
@@ -91,15 +137,20 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div 
-        className="w-screen h-screen flex flex-col items-center justify-center bg-[#C5DCD5] text-foreground overflow-auto"
-        style={{ maxWidth: '1366px', maxHeight: '768px', margin: '0 auto' }}
+      <div
+        className="w-screen h-screen flex flex-col items-center overflow-auto"
+        style={{
+          maxWidth: "1366px",
+          maxHeight: "768px",
+          margin: "0 auto",
+          backgroundImage: "url('/assets/Fondo.png')",
+        }}
       >
-        <div className="w-full h-full max-w-6xl p-4 flex flex-col items-center">
+        <div className="w-full h-full max-w-2xl p-4 flex flex-col items-center">
           {renderGamePhase()}
         </div>
 
-        {isInstructionsOpen && <Instructions />}
+        {isInstructionsOpen && <InstructionsPage />}
       </div>
     </QueryClientProvider>
   );

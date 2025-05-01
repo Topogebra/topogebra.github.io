@@ -1,64 +1,86 @@
 import React from "react";
-import { useMathGame } from "@/lib/stores/useMathGame";
 import { motion } from "framer-motion";
+import { useMathGame } from "@/lib/stores/useMathGame";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 const InstructionsPage: React.FC = () => {
-  const { goToNextPhase, gameModes } = useMathGame();
-  
+  const { goToNextPhase, goToPreviousPhase } = useMathGame();
+
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-[#C5DCD5] rounded-xl p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-8"
+    <div 
+      className="fixed inset-0 flex justify-center items-start bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/assets/Fondo.png')" }}
+    >
+      <button 
+        onClick={goToPreviousPhase}
+        className="absolute left-4 top-4 z-50 p-2 rounded-full bg-[#3c2f80] text-white hover:bg-[#5d4ba7] transition-colors"
       >
-        {/* Título similar al de la página principal */}
-        <div className="w-full mb-6 bg-[#A3BDC7] py-3 px-6 rounded-md shadow-sm">
-          <h1 className="text-3xl font-bold text-[#333] text-center">Instrucciones del Juego</h1>
-        </div>
-        
-        <div className="space-y-6 text-black max-h-[50vh] overflow-y-auto pr-2">
-          <div className="bg-blue-50 p-5 rounded-md border border-blue-100">
-            <h2 className="text-xl font-bold text-blue-700 mb-3">¡Bienvenido a Topogebra!</h2>
-            <p className="text-base">
-              En este juego pondrás a prueba tus habilidades matemáticas mientras golpeas topos.
-              Cada topo mostrará un número y tendrás que golpear solo aquellos que cumplen
-              con la regla matemática del modo de juego seleccionado.
-            </p>
-          </div>
+        <ChevronLeft className="w-8 h-8" />
+      </button>
 
-          <div className="bg-green-50 p-5 rounded-md border border-green-100">
-            <h2 className="text-xl font-bold text-green-700 mb-3">Modos de Juego</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              {gameModes.map(mode => (
-                <li key={mode.id} className="text-base">
-                  <span className="font-semibold">{mode.label}</span>: {mode.description}
-                </li>
-              ))}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -30 }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+        className="w-full max-w-3xl bg-white rounded-xl shadow-lg border border-[#A3BDC7] mt-4 scale-[0.9]"
+      >
+        <div className="p-3">
+          <h1 className="text-3xl font-Cleanow font-bold text-center text-[#000000] mb-1">
+            ¡Instrucciones de <span className="text-[#3c2f80]">TOPOGEBRA</span>!
+          </h1>
+
+          <p className="text-2xl text-[#000] font-ShineTypewriter font-bold text-center leading-snug mb-2">
+            Tu objetivo es golpear los topos correctos según el modo de juego que elijas
+          </p>
+          <p className="text-[#000] font-ShineTypewriter font-bold text-center leading-snug mb-2">
+            (´-ω-`)
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-1 mb-1">
+            <ul className="space-y-2 pl-4 list-disc text-[#000]">
+              <li className="text-2xl font-ShineTypewriter font-bold">
+                <span className="font-Cleanow text-[#3c2f80]">Números Pares:</span> Golpea solo los topos con números pares 
+              </li>
+              <li className="text-2xl font-ShineTypewriter font-bold">
+                <span className="font-Cleanow text-[#3c2f80]">Números Impares:</span> Golpea solo los topos con números impares 
+              </li>
+              <li className="text-2xl font-ShineTypewriter font-bold">
+                <span className="font-Cleanow text-[#3c2f80]">Números Primos:</span> Golpea solo los topos con números primos
+              </li>
+            </ul>
+            <ul className="space-y-2 pl-6 list-disc text-[#000]">
+              <li className="text-2xl font-ShineTypewriter font-bold">
+                <span className="font-Cleanow text-[#3c2f80]">Múltiplos de 5:</span> Golpea solo los topos con múltiplos de 5 
+              </li>
+              <li className="text-2xl font-ShineTypewriter font-bold">
+                <span className="font-Cleanow text-[#3c2f80]">Múltiplos de 7:</span> Golpea solo los topos con múltiplos de 7 
+              </li>
+              <div className="bg-[#E8F4FB] border border-[#A3BDC7] rounded-xl p-3 mb-2">
+                <p className="text-base font-Cleanow text-center text-[#3c2f80] mb-1">
+                  ¡CUIDADO CON LOS TOPOS ROJOS, TE QUITAN 10 PUNTOS!
+                </p>
+              </div>
             </ul>
           </div>
 
-          <div className="bg-amber-50 p-5 rounded-md border border-amber-100">
-            <h2 className="text-xl font-bold text-amber-700 mb-3">Cómo Puntuar</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li className="text-base">+10 puntos por cada golpe correcto</li>
-              <li className="text-base">-5 puntos por cada golpe incorrecto</li>
-              <li className="text-base">Los topos desaparecen solos si no son golpeados</li>
-              <li className="text-base">¡Trata de obtener la puntuación más alta posible!</li>
+          <div className="bg-[#E8F4FB] border border-[#A3BDC7] rounded-xl p-3 mb-2">
+            <h2 className="text-2xl font-Cleanow text-[#000000]">Puntuación:</h2>
+            <ul className="pl-4 list-disc text-gray-800">
+              <li className="text-base font-ShineTypewriter text-[#257551]">+10 puntos por cada acierto</li>
+              <li className="text-base font-ShineTypewriter text-[#911818]">-5 puntos por cada error</li>
             </ul>
           </div>
-        </div>
-        
-        <div className="mt-8 flex justify-center">
-          <Button 
-            onClick={() => goToNextPhase()}
-            size="lg"
-            className="bg-[#A3BDC7] hover:bg-[#8CADBF] text-[#333] font-bold px-8 py-3 text-lg rounded-lg shadow-md transition-all"
-          >
-            ¡Entendido! Seleccionar Modo
-          </Button>
+
+          <div className="flex justify-center">
+            <Button
+              onClick={goToNextPhase}
+              className="text-base px-8 py-8 bg-[#b1e5ff] hover:bg-[#8df19c] text-[#3c2f80] font-Cleanow font-bold rounded-xl shadow-md uppercase transition-colors"
+            >
+              Entendido
+            </Button>
+          </div>
         </div>
       </motion.div>
     </div>

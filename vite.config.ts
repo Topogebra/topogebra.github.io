@@ -9,10 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
+  base: "/", // ✅ IMPORTANTE para que funcione en GitHub Pages (si el repo es topogebra.github.io)
   plugins: [
     react(),
     runtimeErrorOverlay(),
-    glsl(), // Add GLSL shader support
+    glsl(), // Soporte para shaders GLSL
   ],
   resolve: {
     alias: {
@@ -22,9 +23,8 @@ export default defineConfig({
   },
   root: path.resolve(__dirname, "client"),
   build: {
-    outDir: path.resolve(__dirname, "dist/public"),
+    outDir: path.resolve(__dirname, "dist"), // ✅ Cambiado de dist/public → dist
     emptyOutDir: true,
   },
-  // Add support for large models and audio files
-  assetsInclude: ["**/*.gltf", "**/*.glb", "**/*.mp3", "**/*.ogg", "**/*.wav"],
+  assetsInclude: ["**/*.gltf", "**/*.glb", "**/*.mp3", "**/*.ogg", "**/*.wav"], // Soporte extra
 });

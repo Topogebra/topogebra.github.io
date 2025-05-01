@@ -48,3 +48,31 @@ canvas {
   margin: 0 auto;
   overflow: hidden;
 }
+
+@font-face {
+  font-family: "Minya";
+  src: url("/fonts/Minya.otf") format("opentype"); /* .otf es formato OpenType */
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: "Cleanow";
+  src: url("/fonts/Cleanow.otf") format("opentype"); /* .otf es formato OpenType */
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Idealy";
+  src: url("/fonts/Idealy.otf") format("opentype"); /* .otf es formato OpenType */
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "ShineTypewriter";
+  src: url("/fonts/ShineTypewriter.ttf") format("truetype"); /* .ttf es formato TrueType */
+  font-weight: normal;
+  font-style: normal;
+}
+

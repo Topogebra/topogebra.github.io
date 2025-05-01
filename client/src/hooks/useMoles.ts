@@ -1,137 +1,157 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useMathGame } from "@/lib/stores/useMathGame";
-import { useGame } from "@/lib/stores/useGame";
 
 export interface Mole {
   id: number;
   value: number;
   active: boolean;
   hit: boolean;
+  type: 'normal' | 'bad';
 }
 
-// Number of moles to show on the game board
 const MOLE_COUNT = 10;
-
-// Time ranges for mole appearances (in milliseconds)
-const MIN_ACTIVE_TIME = 2000; // Cuánto tiempo permanece el topo activo como mínimo
-const MAX_ACTIVE_TIME = 3500; // Cuánto tiempo permanece el topo activo como máximo
-
-// Tiempos entre apariciones (5-7 segundos según requisito)
-const MIN_INACTIVE_TIME = 5000; // 5 segundos
-const MAX_INACTIVE_TIME = 7000; // 7 segundos
+const MIN_ACTIVE_TIME = 1000;
+const MAX_ACTIVE_TIME = 2000;
+const MIN_INACTIVE_TIME = 2000;
+const MAX_INACTIVE_TIME = 3000;
+const BAD_MOLE_PROBABILITY = 0.15;
 
 export function useMoles() {
   const { gamePhase, valueRange } = useMathGame();
   const [moles, setMoles] = useState<Mole[]>([]);
+  const timersRef = useRef<number[]>([]);
 
-  // Initialize moles
+  const determineMoleType = (): 'normal' | 'bad' => {
+    return Math.random() < BAD_MOLE_PROBABILITY ? 'bad' : 'normal';
+  };
+
   useEffect(() => {
     const initialMoles = Array.from({ length: MOLE_COUNT }, (_, index) => ({
       id: index,
       value: getRandomValue(valueRange.min, valueRange.max),
       active: false,
       hit: false,
+      type: determineMoleType(),
     }));
-    
     setMoles(initialMoles);
   }, [valueRange]);
 
-  // Handle mole activation
   useEffect(() => {
     if (gamePhase !== "playing") return;
 
-    const timers: number[] = [];
+    const activateRandomMoles = () => {
+      const molesToActivate = Math.floor(Math.random() * 5) + 4; // entre 4 y 8 topos
 
-    // Function to randomly activate moles
-    const activateMoles = () => {
-      // Choose a random mole to activate
-      const inactiveMoles = moles.filter(mole => !mole.active && !mole.hit);
-      
-      if (inactiveMoles.length === 0) return;
-      
-      const moleToActivate = inactiveMoles[Math.floor(Math.random() * inactiveMoles.length)];
-      
-      // Update mole's state to active
-      setMoles(prevMoles => 
-        prevMoles.map(mole => 
-          mole.id === moleToActivate.id 
-            ? { ...mole, active: true, value: getRandomValue(valueRange.min, valueRange.max) } 
-            : mole
-        )
-      );
-      
-      // Set a timer to deactivate the mole
-      const activeTime = Math.random() * (MAX_ACTIVE_TIME - MIN_ACTIVE_TIME) + MIN_ACTIVE_TIME;
-      const timerId = window.setTimeout(() => {
-        setMoles(prevMoles => 
-          prevMoles.map(mole => 
-            mole.id === moleToActivate.id ? { ...mole, active: false } : mole
-          )
-        );
-      }, activeTime);
-      
-      timers.push(timerId);
+      setMoles(prev => {
+        const updated = [...prev];
+        const inactiveMoles = updated.filter(m => !m.hit);
+        const chosenMoles = inactiveMoles
+          .sort(() => Math.random() - 0.5)
+          .slice(0, molesToActivate);
+
+        for (const mole of chosenMoles) {
+          // Paso 1: Desactivar brevemente
+          setMoles(curr =>
+            curr.map(m =>
+              m.id === mole.id ? { ...m, active: false } : m
+            )
+          );
+
+          // Paso 2: Reactivar luego de una pausa
+          window.setTimeout(() => {
+            setMoles(curr =>
+              curr.map(m =>
+                m.id === mole.id
+                  ? {
+                      ...m,
+                      active: true,
+                      value: getRandomValue(valueRange.min, valueRange.max),
+                      type: determineMoleType(),
+                    }
+                  : m
+              )
+            );
+          }, 200); // <- ajusta este valor según la animación
+
+          const activeTime = getRandomTime(MIN_ACTIVE_TIME, MAX_ACTIVE_TIME);
+          timersRef.current.push(
+            window.setTimeout(() => {
+              setMoles(current =>
+                current.map(m =>
+                  m.id === mole.id ? { ...m, active: false } : m
+                )
+              );
+            }, activeTime + 200) // Suma 200ms de delay previo
+          );
+        }
+
+        return updated;
+      });
     };
-    
-    // Schedule regular mole activations
-    const scheduleMoleActivation = () => {
-      const inactiveTime = Math.random() * (MAX_INACTIVE_TIME - MIN_INACTIVE_TIME) + MIN_INACTIVE_TIME;
-      const timerId = window.setTimeout(() => {
-        activateMoles();
-        scheduleMoleActivation();
+
+    const scheduleNextActivation = () => {
+      const inactiveTime = getRandomTime(MIN_INACTIVE_TIME, MAX_INACTIVE_TIME);
+      const timer = window.setTimeout(() => {
+        activateRandomMoles();
+        scheduleNextActivation();
       }, inactiveTime);
-      
-      timers.push(timerId);
+      timersRef.current.push(timer);
     };
-    
-    // Activar algunos topos inicialmente para que el juego no empiece vacío
-    for (let i = 0; i < 3; i++) {
-      setTimeout(() => activateMoles(), i * 500);
-    }
-    
-    // Start scheduling mole activations
-    scheduleMoleActivation();
-    
-    // Clean up all timers when component unmounts or game phase changes
-    return () => {
-      timers.forEach(timerId => window.clearTimeout(timerId));
-    };
-  }, [moles, gamePhase, valueRange]);
 
-  // Function to update a mole when it's hit
-  const hitMole = useCallback((id: number) => {
-    setMoles(prevMoles => 
-      prevMoles.map(mole => 
-        mole.id === id ? { ...mole, hit: true, active: false } : mole
+    const initialTimer = window.setTimeout(() => {
+      activateRandomMoles();
+      scheduleNextActivation();
+    }, 1000);
+    timersRef.current.push(initialTimer);
+
+    return () => {
+      timersRef.current.forEach(timer => clearTimeout(timer));
+      timersRef.current = [];
+    };
+  }, [gamePhase, valueRange]);
+
+  const hitMole = useCallback((id: number, isBad: boolean) => {
+    if (isBad) {
+      console.log("¡Topo malo golpeado! -10 puntos");
+    }
+
+    setMoles(prev =>
+      prev.map(m =>
+        m.id === id ? { ...m, hit: true, active: false } : m
       )
     );
-    
-    // Reset the hit status after a short delay
+
     window.setTimeout(() => {
-      setMoles(prevMoles => 
-        prevMoles.map(mole => 
-          mole.id === id ? { ...mole, hit: false } : mole
+      setMoles(prev =>
+        prev.map(m =>
+          m.id === id ? { ...m, hit: false } : m
         )
       );
     }, 300);
   }, []);
 
-  // Reset all moles
   const resetMoles = useCallback(() => {
-    setMoles(prevMoles => 
-      prevMoles.map(mole => ({
+    setMoles(prev =>
+      prev.map(mole => ({
         ...mole,
         active: false,
         hit: false,
-        value: getRandomValue(valueRange.min, valueRange.max)
+        value: getRandomValue(valueRange.min, valueRange.max),
+        type: determineMoleType()
       }))
     );
+    timersRef.current.forEach(timer => clearTimeout(timer));
+    timersRef.current = [];
   }, [valueRange]);
 
   return { moles, hitMole, resetMoles };
 }
 
-// Helper function to generate random values for moles
 function getRandomValue(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+function getRandomTime(min: number, max: number): number {
+  return Math.random() * (max - min) + min;
+}
+

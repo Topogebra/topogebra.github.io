@@ -9,57 +9,48 @@ interface TimerProps {
 }
 
 const Timer: React.FC<TimerProps> = ({ timeLeft, totalTime }) => {
-  // Calculate percentage of time remaining
   const percentageLeft = (timeLeft / totalTime) * 100;
-  
-  // Format time as minutes:seconds
+
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  // Determine the color based on time left
-  const getProgressColor = () => {
-    if (percentageLeft < 20) return "bg-red-500";
-    if (percentageLeft < 50) return "bg-amber-500";
-    return "bg-green-500";
-  };
-  
-  // Determine the text color based on time left
-  const getTextColor = () => {
-    if (percentageLeft < 20) return "text-red-600";
-    if (percentageLeft < 50) return "text-amber-600";
-    return "text-green-600";
+  const getColor = () => {
+    if (percentageLeft < 20) return "bg-red-500 text-red-600";
+    if (percentageLeft < 50) return "bg-amber-500 text-amber-600";
+    return "bg-[#3c2f80] text-[#3c2f80]";
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex items-center gap-1 mb-1">
-        <Clock size={20} className="text-[#333]" />
-        <h2 className="text-lg font-bold text-[#333]">Tiempo</h2>
-      </div>
-      <motion.div 
-        className={cn(
-          "text-2xl font-mono font-bold px-3 py-1 rounded-md shadow-sm",
-          "bg-white border-2",
-          getTextColor(),
-          timeLeft < 10 ? "border-red-500" : "border-[#A3BDC7]"
-        )}
-        animate={{ 
-          scale: timeLeft < 10 && timeLeft % 2 === 0 ? 1.05 : 1 
-        }}
-        transition={{ duration: 0.2 }}
-      >
-        {formatTime(timeLeft)}
-      </motion.div>
-      <div className="w-full h-3 mt-2 relative bg-gray-200 rounded-full overflow-hidden">
-        <div 
-          className={cn("h-full absolute left-0 top-0 transition-all", getProgressColor())}
-          style={{ width: `${percentageLeft}%` }}
-        />
-      </div>
+    <div className="bg-[#F7F9FC] rounded-xl p-4 shadow-md w-full h-full flex flex-col justify-between">
+  <div className="relative flex flex-col items-center justify-center flex-grow">
+  <div className="flex items-center gap-2 text-[#3c2f80]">
+  <Clock size={40} />
+  <span className="font-Cleanow text-4xl uppercase">Tiempo</span>
     </div>
+    <motion.span 
+      className={cn(
+        "font-Cleanow text-3xl",
+        percentageLeft < 20 ? "text-red-600" : "text-[#000000]"
+      )}
+      animate={{ 
+        scale: timeLeft < 10 && timeLeft % 2 === 0 ? 1.05 : 1 
+      }}
+    >
+      {formatTime(timeLeft)}
+    </motion.span>
+  </div>
+
+  {/* Barra de progreso */}
+  <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+    <div 
+      className={cn("h-full transition-all duration-1000", getColor())}
+      style={{ width: `${percentageLeft}%` }}
+    />
+  </div>
+</div>
   );
 };
 

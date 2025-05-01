@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGame } from "@/lib/stores/useGame";
 import { useMathGame } from "@/lib/stores/useMathGame";
 import Mole from "./Mole";
@@ -7,63 +7,101 @@ import Timer from "./Timer";
 import { useGameLogic } from "@/hooks/useGameLogic";
 import { useMoles } from "@/hooks/useMoles";
 import { motion } from "framer-motion";
+import { ChevronLeft } from "lucide-react";
 
 const GameBoard: React.FC = () => {
-  const { end } = useGame();
-  const { gameMode, gameTime, resetGameState, goToNextPhase } = useMathGame();
+  const { gameMode, gameTime, goToNextPhase, goToModeSelection, resetGameState } = useMathGame();
   const { moles, resetMoles } = useMoles();
   const { timeLeft, startTimer } = useGameLogic();
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
 
-  // Initialize the game when component mounts
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   useEffect(() => {
     startTimer();
-    
-    // Clean up when component unmounts
-    return () => {
-      resetGameState();
-      resetMoles();
-    };
-  }, [resetGameState, resetMoles, startTimer]);
+    return () => resetMoles();
+  }, [resetMoles, startTimer]);
 
-  // Manejo del fin del tiempo
   useEffect(() => {
-    if (timeLeft <= 0) {
-      // Usamos el nuevo sistema de fases
-      goToNextPhase(); // De "playing" a "game-over"
-    }
+    if (timeLeft <= 0) goToNextPhase();
   }, [timeLeft, goToNextPhase]);
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="w-full max-w-5xl mx-auto flex flex-col items-center game-container"
-    >
-      <div className="w-full flex justify-between items-center mb-2 px-4">
-        <Score />
-        <div className="px-3 py-1 bg-[#A3BDC7] rounded-md shadow-sm text-[#333]">
-          <span className="font-medium">Modo: </span>
-          <span className="font-bold">{gameMode.label}</span>
-        </div>
-        <Timer timeLeft={timeLeft} totalTime={gameTime} />
-      </div>
+  const handleReturnToModeSelection = () => {
+    resetMoles();
+    resetGameState(); // <-- Esta línea resetea el score
+    goToModeSelection();
+  };
 
-      <div 
-        className="w-full bg-[#e2f0ea] rounded-lg p-4 grid grid-cols-5 grid-rows-2 gap-3"
-        style={{ 
-          maxHeight: 'calc(100vh - 150px)',
-          minHeight: '450px'
-        }}
+  return (
+    <div
+      className="fixed inset-4 flex flex-col justify-start items-center bg-cover bg-center overflow-hidden"
+      style={{
+        backgroundImage: "url('/assets/Fondo.png')",
+        cursor: 'none'
+      }}
+    >
+      {/* Botón para regresar a la selección de modo */}
+      <button 
+        onClick={handleReturnToModeSelection}
+        className="absolute left-4 top-4 z-50 p-2 rounded-full bg-[#3c2f80] text-white hover:bg-[#5d4ba7] transition-colors"
       >
-        {moles.map((mole) => (
-          <Mole 
-            key={mole.id} 
-            mole={mole}
-          />
-        ))}
-      </div>
-    </motion.div>
+        <ChevronLeft className="w-8 h-8" />
+      </button>
+
+      {/* Cursor personalizado */}
+      <div
+        style={{
+          position: 'fixed',
+          left: `${cursorPos.x}px`,
+          top: `${cursorPos.y}px`,
+          width: '128px',
+          height: '128px',
+          backgroundImage: 'url("/assets/Mazo.png")',
+          backgroundSize: 'contain',
+          pointerEvents: 'none',
+          zIndex: 9999,
+          transform: 'translate(-50%, -50%)'
+        }}
+      />
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="w-full max-w-6xl flex flex-col items-center px-4 mt-0"
+      >
+        <div className="grid grid-cols-3 gap-4 w-full mb-4">
+          <Score />
+          <div className="flex justify-center items-center bg-[#F7F9FC] border-2 border-[#A3BDC7] rounded-xl p-4 shadow-md text-[#3c2f80] text-center">
+            <div>
+              <p className="text-4xl uppercase tracking-wide font-Cleanow">Modo de juego</p>
+              <p className="text-3xl text-black font-Cleanow">{gameMode.label}</p>
+            </div>
+          </div>
+          <Timer timeLeft={timeLeft} totalTime={gameTime} />
+        </div>
+
+        <div 
+          className="grid grid-cols-5 grid-rows-2 gap-y-10 gap-x-10"
+          style={{
+            width: "100%",
+            maxWidth: "1000px",
+            height: "calc(100vh - 250px)",
+            maxHeight: "500px",
+          }}
+        >
+          {moles.map((mole) => (
+            <Mole key={mole.id} mole={mole} />
+          ))}
+        </div>
+      </motion.div>
+    </div>
   );
 };
 
