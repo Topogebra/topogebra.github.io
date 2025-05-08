@@ -135,19 +135,20 @@ function App() {
     }
   };
 
-return (
-  <QueryClientProvider client={queryClient}>
-    <div
-      className="fixed inset-0 flex justify-center items-start overflow-y-auto bg-cover bg-center bg-no-repeat p-4 md:p-10"
-      style={{ backgroundImage: "url('/assets/Fondo.png')" }}
-    >
-      <div className="w-full h-full max-w-2xl flex flex-col items-center">
-        {renderGamePhase()}
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div
+ className="fixed inset-0 flex justify-center items-start bg-cover bg-center bg-no-repeat"
+ style={{ backgroundImage: "url('/assets/Fondo.png')" }}
+>
+        <div className="w-full h-full max-w-2xl p-4 flex flex-col items-center">
+          {renderGamePhase()}
+        </div>
+
+        {isInstructionsOpen && <InstructionsPage />}
       </div>
-      {isInstructionsOpen && <InstructionsPage />}
-    </div>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
 }
 
 export default App;
