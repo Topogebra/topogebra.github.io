@@ -138,17 +138,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div
-        className="w-screen h-screen flex flex-col items-center overflow-auto"
-        style={{
-          maxWidth: "1366px",
-          maxHeight: "768px",
-          margin: "0 auto",
-          backgroundImage: "url('/assets/Fondo.png')",
-        }}
-      >
-        <div className="w-full h-full max-w-2xl p-4 flex flex-col items-center">
-          {renderGamePhase()}
-        </div>
+  className="fixed inset-0 flex justify-center items-start overflow-y-auto bg-cover bg-center bg-no-repeat p-4 md:p-10"
+  style={{ backgroundImage: "url('/assets/Fondo.png')" }}
+>
+  <div className="w-full h-full max-w-2xl flex flex-col items-center">
+    {renderGamePhase()}
+  </div>
+</div>
 
         {isInstructionsOpen && <InstructionsPage />}
       </div>
