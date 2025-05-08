@@ -135,21 +135,19 @@ function App() {
     }
   };
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <div
-  className="fixed inset-0 flex justify-center items-start overflow-y-auto bg-cover bg-center bg-no-repeat p-4 md:p-10"
-  style={{ backgroundImage: "url('/assets/Fondo.png')" }}
->
-  <div className="w-full h-full max-w-2xl flex flex-col items-center">
-    {renderGamePhase()}
-  </div>
-</div>
-
-        {isInstructionsOpen && <InstructionsPage />}
+return (
+  <QueryClientProvider client={queryClient}>
+    <div
+      className="fixed inset-0 flex justify-center items-start overflow-y-auto bg-cover bg-center bg-no-repeat p-4 md:p-10"
+      style={{ backgroundImage: "url('/assets/Fondo.png')" }}
+    >
+      <div className="w-full h-full max-w-2xl flex flex-col items-center">
+        {renderGamePhase()}
       </div>
-    </QueryClientProvider>
-  );
+      {isInstructionsOpen && <InstructionsPage />}
+    </div>
+  </QueryClientProvider>
+);
 }
 
 export default App;
