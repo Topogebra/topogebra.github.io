@@ -40,12 +40,12 @@ const GameBoard: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-4 flex flex-col justify-start items-center bg-cover bg-center overflow-hidden"
-      style={{
-        backgroundImage: "url('/assets/Fondo.png')",
-        cursor: 'none'
-      }}
-    >
+  className="fixed inset-0 flex flex-col justify-start items-center bg-cover bg-center bg-no-repeat"
+  style={{
+    backgroundImage: "url('/assets/Fondo.png')",
+    cursor: 'none'
+  }}
+>
       {/* Botón para regresar a la selección de modo */}
       <button 
         onClick={handleReturnToModeSelection}
