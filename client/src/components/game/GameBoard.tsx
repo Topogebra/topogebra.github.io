@@ -87,15 +87,11 @@ const GameBoard: React.FC = () => {
           <Timer timeLeft={timeLeft} totalTime={gameTime} />
         </div>
 
-        <div 
-          className="grid grid-cols-5 grid-rows-2 gap-y-10 gap-x-10"
-          style={{
-            width: "100%",
-            maxWidth: "1000px",
-            height: "calc(100vh - 250px)",
-            maxHeight: "500px",
-          }}
-        >
+       
+         <div
+ className="fixed inset-0 flex justify-center items-start bg-cover bg-center bg-no-repeat"
+ style={{ backgroundImage: "url('/assets/Fondo.png')" }}
+>
           {moles.map((mole) => (
             <Mole key={mole.id} mole={mole} />
           ))}
