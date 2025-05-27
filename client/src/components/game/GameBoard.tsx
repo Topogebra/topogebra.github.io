@@ -40,12 +40,32 @@ const GameBoard: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-4 flex flex-col justify-start items-center bg-cover bg-center overflow-hidden"
-      style={{
-        backgroundImage: "url('/assets/Fondo.png')",
-        cursor: 'none'
-      }}
-    >
+  className="fixed inset-0 flex flex-col justify-start items-center bg-cover bg-center bg-no-repeat sm:bg-cover"
+  style={{
+    backgroundImage: "url('/assets/Fondo.png')",
+    cursor: 'none'
+  }}
+>
+  {/* Logo izquierdo */}
+<img
+  src="/assets/logo.png"
+  alt="Logo"
+  className="absolute top-4 left-4 w-20 sm:w-28 md:w-32 z-30"
+/>
+
+{/* Logo derecho */}
+<img
+  src="/assets/logo-itiguala.png"
+  alt="Logo ITI"
+  className="absolute top-4 right-4 w-20 sm:w-28 md:w-32 z-30"
+/>
+
+{/* Texto de autores */}
+<p className="absolute bottom-5 left-1/2 transform -translate-x-1/2 text-white text-center text-xs font-ShineTypewriter bg-[#3b0f35] bg-opacity-80 py-1 px-4 rounded-md z-30">
+  Creado por:<br />
+  Ilse Rocío Cuevas Adame<br />
+  Jenifer Brito Salazar
+</p>
       {/* Botón para regresar a la selección de modo */}
       <button 
         onClick={handleReturnToModeSelection}

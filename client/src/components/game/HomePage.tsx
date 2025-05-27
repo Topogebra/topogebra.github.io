@@ -48,6 +48,19 @@ const HomePage: React.FC = () => {
         cursor: "url('/assets/Mazo.png') 64 64, auto",
       }}
     >
+      {/* Logo izquierdo */}
+    <img
+      src="/assets/logo.png"
+      alt="Logo"
+      className="absolute top-4 left-4 w-20 sm:w-28 md:w-32 z-30"
+    />
+
+    {/* Logo derecho */}
+    <img
+      src="/assets/logo-itiguala.png"
+      alt="Logo ITI"
+      className="absolute top-4 right-4 w-20 sm:w-28 md:w-32 z-30"
+    />
       {/* Frases flotantes */}
       {randomPositions.map((pos, index) => (
         <motion.div
@@ -78,6 +91,13 @@ const HomePage: React.FC = () => {
         }}
         className="flex flex-col items-center max-w-screen-md w-full px-4 sm:px-20"
       >
+        
+   {/* Texto de autores arriba en el centro */}
+<p className="absolute top-[-60px] left-1/2 transform -translate-x-1/2 text-white text-center text-xs font-ShineTypewriter bg-[#3b0f35] bg-opacity-80 py-1 px-4 rounded-md z-30">
+  Creado por:<br />
+  Ilse Rocío Cuevas Adame<br />
+  Jenifer Brito Salazar
+</p>
         {/* Título */}
         <div className="w-full mb-8 z-20">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-Cleanow font-bold text-white text-center bg-[#3b0f35] py-2 sm:py-4 px-4 sm:px-10 rounded-xl shadow-sm">

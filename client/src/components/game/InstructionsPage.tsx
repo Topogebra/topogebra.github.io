@@ -12,9 +12,28 @@ const InstructionsPage: React.FC = () => {
       className="fixed inset-0 flex justify-center items-start bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/assets/Fondo.png')" }}
     >
+      {/* Logo izquierdo */}
+    <img
+      src="/assets/logo.png"
+      alt="Logo"
+      className="absolute top-4 left-4 w-20 sm:w-28 md:w-32 z-30"
+    />
+
+    {/* Logo derecho */}
+    <img
+      src="/assets/logo-itiguala.png"
+      alt="Logo ITI"
+      className="absolute top-4 right-4 w-20 sm:w-28 md:w-32 z-30"
+    />
+       {/* Texto de autores arriba en el centro */}
+<p className="absolute bottom-[20px] left-40 transform -translate-x-1/2 text-white text-center text-xs font-ShineTypewriter bg-[#3b0f35] bg-opacity-80 py-1 px-4 rounded-md z-30">
+  Creado por:<br />
+  Ilse Rocío Cuevas Adame<br />
+  Jenifer Brito Salazar
+</p>
       <button 
         onClick={goToPreviousPhase}
-        className="absolute left-4 top-4 z-50 p-2 rounded-full bg-[#3c2f80] text-white hover:bg-[#5d4ba7] transition-colors"
+        className="absolute left-44 top-4 z-50 p-2 rounded-full bg-[#3c2f80] text-white hover:bg-[#5d4ba7] transition-colors"
       >
         <ChevronLeft className="w-8 h-8" />
       </button>

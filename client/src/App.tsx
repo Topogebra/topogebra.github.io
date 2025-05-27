@@ -138,14 +138,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div
-        className="w-screen h-screen flex flex-col items-center overflow-auto"
-        style={{
-          maxWidth: "1366px",
-          maxHeight: "768px",
-          margin: "0 auto",
-          backgroundImage: "url('/assets/Fondo.png')",
-        }}
-      >
+ className="fixed inset-0 flex justify-center items-start bg-cover bg-center bg-no-repeat"
+ style={{ backgroundImage: "url('/assets/Fondo.png')" }}
+>
         <div className="w-full h-full max-w-2xl p-4 flex flex-col items-center">
           {renderGamePhase()}
         </div>
